@@ -1,5 +1,5 @@
 "use client";
-import { Button, Callout, Text, TextField } from "@radix-ui/themes";
+import { Button, Callout, Spinner, Text, TextField } from "@radix-ui/themes";
 import SimpleMdeReact from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Controller, useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { createIssueSchema } from "@/app/validationSchemas";
 import { z } from "zod";
 import { useState } from "react";
 import { IoWarning } from "react-icons/io5";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -17,12 +18,21 @@ const NewIssuePage = () => {
       register,
       handleSubmit,
       control,
-      formState: { errors },
+      formState: { errors, isSubmitting },
    } = useForm<IssueForm>({
       resolver: zodResolver(createIssueSchema),
    });
 
    const [error, setError] = useState("");
+
+   const onSubmit = async (values: IssueForm) => {
+      try {
+         const res = await axios.post("/api/issues", values);
+      } catch (err) {
+         console.log({ err });
+         setError("Unexpected error occured.");
+      }
+   };
    return (
       <div>
          {error && (
@@ -33,29 +43,13 @@ const NewIssuePage = () => {
                <Callout.Text>{error}</Callout.Text>
             </Callout.Root>
          )}
-         <form
-            onSubmit={handleSubmit(async (values) => {
-               try {
-                  const res = await axios.post("/api/issues", values);
-                  console.log({ res });
-               } catch (err) {
-                  console.log({ err });
-                  setError("Unexpected error occured.");
-               }
-            })}
-            className="max-w-xl space-y-5"
-         >
+         <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl space-y-5">
             <div>
-               {" "}
                <TextField.Root
                   placeholder="title"
                   {...register("title", { required: false })}
                />
-               {errors.title?.message && (
-                  <Text color="red" as="p">
-                     {errors.title?.message}
-                  </Text>
-               )}
+               <ErrorMessage>{errors.title?.message}</ErrorMessage>
             </div>
 
             <div>
@@ -67,13 +61,11 @@ const NewIssuePage = () => {
                      <SimpleMdeReact placeholder="description" {...field} />
                   )}
                />
-               {errors.description?.message && (
-                  <Text as="p" color="red">
-                     {errors.description?.message}
-                  </Text>
-               )}
+               <ErrorMessage>{errors.description?.message}</ErrorMessage>
             </div>
-            <Button>Submit new Issue</Button>
+            <Button disabled={isSubmitting}>
+               Submit new Issue {isSubmitting && <Spinner />}
+            </Button>
          </form>
       </div>
    );
