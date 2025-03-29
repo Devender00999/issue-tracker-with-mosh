@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import "./theme.config.css";
 import Navbar from "./Navbar";
-import { Theme } from "@radix-ui/themes";
+import { Theme, ThemePanel } from "@radix-ui/themes";
 
-const geistSans = Geist({
-   variable: "--font-geist-sans",
+const inter = Inter({
+   variable: "--font-inter",
    subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-   variable: "--font-geist-mono",
-   subsets: ["latin"],
+const poppins = Poppins({
+   variable: "--font-poppins",
+   weight: ["100", "300", "400", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -26,12 +27,10 @@ export default function RootLayout({
 }>) {
    return (
       <html lang="en">
-         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-         >
-            <Theme>
+         <body className={`${poppins.variable} radix-themes antialiased`}>
+            <Theme accentColor="violet" grayColor="sand" radius="large">
                <Navbar />
-               {children}
+               <div className="p-5">{children}</div>
             </Theme>
          </body>
       </html>
