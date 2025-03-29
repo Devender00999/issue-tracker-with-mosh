@@ -1,15 +1,18 @@
 "use client";
-import { Button, Callout, Spinner, Text, TextField } from "@radix-ui/themes";
-import SimpleMdeReact from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
-import { Controller, useForm } from "react-hook-form";
-import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorMessage } from "@/app/components";
 import { createIssueSchema } from "@/app/validationSchemas";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Callout, Spinner, TextField } from "@radix-ui/themes";
+import axios from "axios";
+import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { IoWarning } from "react-icons/io5";
-import ErrorMessage from "@/app/components/ErrorMessage";
+import { z } from "zod";
+const SimpleMdeReact = dynamic(() => import("react-simplemde-editor"), {
+   ssr: false,
+});
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -33,6 +36,7 @@ const NewIssuePage = () => {
          setError("Unexpected error occured.");
       }
    };
+
    return (
       <div>
          {error && (
@@ -49,7 +53,7 @@ const NewIssuePage = () => {
                   placeholder="title"
                   {...register("title", { required: false })}
                />
-               <ErrorMessage>{errors.title?.message}</ErrorMessage>
+               <>{errors.title?.message}</>
             </div>
 
             <div>
