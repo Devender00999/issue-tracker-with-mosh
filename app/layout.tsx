@@ -1,18 +1,14 @@
+import { Theme } from "@radix-ui/themes";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import "./theme.config.css";
 import Navbar from "./Navbar";
-import { Theme, ThemePanel } from "@radix-ui/themes";
-
-const inter = Inter({
-   variable: "--font-inter",
-   subsets: ["latin"],
-});
+import "./theme.config.css";
 
 const poppins = Poppins({
    variable: "--font-poppins",
    weight: ["100", "300", "400", "700", "900"],
+   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
