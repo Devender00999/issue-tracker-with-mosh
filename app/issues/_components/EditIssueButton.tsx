@@ -5,10 +5,8 @@ import { IoPencil } from "react-icons/io5";
 
 const EditIssueButton = ({ issueId }: { issueId: number }) => {
    return (
-      <Link href={`/issues/edit/${issueId}`}>
-         <Button>
-            <IoPencil></IoPencil>Edit Issue
-         </Button>
+      <Link className="w-full" href={`/issues/edit/${issueId}`}>
+         <Button className="w-full!">Edit Issue</Button>
       </Link>
    );
 };
