@@ -1,11 +1,19 @@
 import { createIssueSchema } from "@/app/validationSchemas";
 import { prisma } from "@/prisma/client";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
    request: NextRequest,
    { params }: { params: Promise<{ id: string }> }
 ) {
+   const session = await getServerSession();
+   if (!session)
+      return NextResponse.json(
+         { error: "User is not authenticated" },
+         { status: 401 }
+      );
+
    const body = await request.json();
    const validation = createIssueSchema.safeParse(body);
    if (!validation.success)
@@ -27,6 +35,13 @@ export async function DELETE(
    request: NextRequest,
    { params }: { params: Promise<{ id: string }> }
 ) {
+   const session = await getServerSession();
+   if (!session)
+      return NextResponse.json(
+         { error: "User is not authenticated" },
+         { status: 401 }
+      );
+
    const { id } = await params;
    const issue = await prisma.issue.findUnique({
       where: { id: parseInt(id) },

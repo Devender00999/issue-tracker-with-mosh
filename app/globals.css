@@ -22,3 +22,7 @@
 
 body {
 }
+
+@utility nav-link {
+   @apply hover:text-zinc-800 transition-colors text-zinc-500;
+}

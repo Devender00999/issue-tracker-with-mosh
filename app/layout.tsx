@@ -1,9 +1,10 @@
-import { Theme } from "@radix-ui/themes";
+import { Container, Theme } from "@radix-ui/themes";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "./Navbar";
 import "./theme.config.css";
+import AuthProvider from "./auth/AuthProvider";
 
 const poppins = Poppins({
    variable: "--font-poppins",
@@ -23,12 +24,16 @@ export default function RootLayout({
 }>) {
    return (
       <html lang="en">
-         <body className={`${poppins.variable} radix-themes antialiased`}>
-            <Theme accentColor="violet" grayColor="sand" radius="large">
-               <Navbar />
-               <div className="p-5">{children}</div>
-            </Theme>
-         </body>
+         <AuthProvider>
+            <body className={`${poppins.variable} radix-themes antialiased`}>
+               <Theme accentColor="violet" grayColor="sand" radius="large">
+                  <Navbar />
+                  <Container>
+                     <div className="p-5">{children}</div>
+                  </Container>
+               </Theme>
+            </body>
+         </AuthProvider>
       </html>
    );
 }
