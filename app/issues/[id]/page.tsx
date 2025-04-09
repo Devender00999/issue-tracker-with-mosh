@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import DeleteIssueButton from "../_components/DeleteIssueButton";
 import EditIssueButton from "../_components/EditIssueButton";
 import IssueDetails from "../IssueDetails";
+import AssigneeSelect from "../_components/AssigneeSelect";
 
 const IssuePage = async ({ params }: { params: Promise<{ id: string }> }) => {
    const { id } = await params;
@@ -25,6 +26,7 @@ const IssuePage = async ({ params }: { params: Promise<{ id: string }> }) => {
          {session && (
             <Box className="">
                <Flex direction={"column"} gap="4">
+                  <AssigneeSelect />
                   <EditIssueButton issueId={issue.id} />
                   <DeleteIssueButton issueId={issue.id} />
                </Flex>
