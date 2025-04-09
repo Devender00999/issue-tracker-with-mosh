@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "./Navbar";
 import "./theme.config.css";
 import AuthProvider from "./auth/AuthProvider";
+import QueryClientProvider from "./QueryClientProvider";
 
 const poppins = Poppins({
    variable: "--font-poppins",
@@ -26,12 +27,14 @@ export default function RootLayout({
       <html lang="en">
          <AuthProvider>
             <body className={`${poppins.variable} radix-themes antialiased`}>
-               <Theme accentColor="violet" grayColor="sand" radius="large">
-                  <Navbar />
-                  <Container>
-                     <div className="p-5">{children}</div>
-                  </Container>
-               </Theme>
+               <QueryClientProvider>
+                  <Theme accentColor="violet" grayColor="sand" radius="large">
+                     <Navbar />
+                     <Container>
+                        <div className="p-5">{children}</div>
+                     </Container>
+                  </Theme>
+               </QueryClientProvider>
             </body>
          </AuthProvider>
       </html>
