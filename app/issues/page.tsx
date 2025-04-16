@@ -1,10 +1,11 @@
 import { prisma } from "@/prisma/client";
 import { Issue, Status } from "@prisma/client";
-import { Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
 import { IoArrowUp } from "react-icons/io5";
 import { IssueBadge, Link } from "../components";
 import IssueActions from "./IssueActions";
+import Pagination from "../components/Pagination";
 // import { useSearchParams } from "next/navigation";
 
 const IssuesPage = async ({
@@ -42,9 +43,11 @@ const IssuesPage = async ({
    const issues = await prisma.issue.findMany({
       where: { status: status as Status },
       orderBy,
+      skip: 0,
+      take: 10,
    });
    return (
-      <div>
+      <Flex direction="column" gap="4">
          <IssueActions />
          <Table.Root variant="surface">
             <Table.Header>
@@ -92,7 +95,10 @@ const IssuesPage = async ({
                ))}
             </Table.Body>
          </Table.Root>
-      </div>
+         <Flex justify="end">
+            <Pagination currentPage={1} itemCounts={100} pageSize={10} />
+         </Flex>
+      </Flex>
    );
 };
 
