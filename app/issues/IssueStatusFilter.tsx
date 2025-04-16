@@ -7,7 +7,6 @@ import React, { useCallback } from "react";
 const IssueStatusFilter = () => {
    const router = useRouter();
    const searchParams = useSearchParams();
-   // searchParams.set('',)
 
    const createQueryString = useCallback(
       (name: string, value: string) => {
@@ -35,6 +34,7 @@ const IssueStatusFilter = () => {
             );
             router.push(`/issues/?${query}`);
          }}
+         value={searchParams.get("status") || ""}
       >
          <Select.Trigger placeholder="Filter by status..." />
          <Select.Content>
