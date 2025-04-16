@@ -4,20 +4,21 @@ import { Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
 import { IoArrowUp } from "react-icons/io5";
 import { IssueBadge, Link } from "../components";
-import IssueActions from "./IssueActions";
 import Pagination from "../components/Pagination";
+import IssueActions from "./IssueActions";
 // import { useSearchParams } from "next/navigation";
 
 const IssuesPage = async ({
    searchParams,
 }: {
-   searchParams: Promise<{ status?: string; orderBy: string }>;
+   searchParams: Promise<{ status?: string; orderBy: string; page?: string }>;
 }) => {
    const currentSearchParams = await searchParams;
    const statuses = Object.values(Status);
    const status = statuses.includes(currentSearchParams.status as Status)
       ? currentSearchParams.status
       : undefined;
+   const page = currentSearchParams.page || "1";
 
    const columns: { label: string; value: keyof Issue; className?: string }[] =
       [
@@ -34,6 +35,8 @@ const IssuesPage = async ({
          },
       ];
 
+   const pageSize = 10;
+
    const orderBy = columns
       ?.map((column) => column.value)
       .includes(currentSearchParams.orderBy as keyof Issue)
@@ -43,9 +46,13 @@ const IssuesPage = async ({
    const issues = await prisma.issue.findMany({
       where: { status: status as Status },
       orderBy,
-      skip: 0,
-      take: 10,
+      skip: (parseInt(page) - 1) * pageSize,
+      take: pageSize,
    });
+   const totalCount = await prisma.issue.count({
+      where: { status: status as Status },
+   });
+
    return (
       <Flex direction="column" gap="4">
          <IssueActions />
@@ -96,7 +103,11 @@ const IssuesPage = async ({
             </Table.Body>
          </Table.Root>
          <Flex justify="end">
-            <Pagination currentPage={1} itemCounts={100} pageSize={10} />
+            <Pagination
+               currentPage={parseInt(page)}
+               itemCounts={totalCount}
+               pageSize={pageSize}
+            />
          </Flex>
       </Flex>
    );
