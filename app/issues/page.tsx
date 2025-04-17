@@ -1,46 +1,32 @@
 import { prisma } from "@/prisma/client";
 import { Issue, Status } from "@prisma/client";
-import { Flex, Table } from "@radix-ui/themes";
-import NextLink from "next/link";
-import { IoArrowUp } from "react-icons/io5";
-import { IssueBadge, Link } from "../components";
+import { Flex } from "@radix-ui/themes";
 import Pagination from "../components/Pagination";
 import IssueActions from "./IssueActions";
-// import { useSearchParams } from "next/navigation";
+import IssuesTable, { columnNames } from "./_components/IssuesTable";
 
-const IssuesPage = async ({
-   searchParams,
-}: {
-   searchParams: Promise<{ status?: string; orderBy: string; page?: string }>;
-}) => {
-   const currentSearchParams = await searchParams;
+export interface IssueQuery {
+   status?: string;
+   orderBy: string;
+   page?: string;
+}
+interface Props {
+   searchParams: Promise<IssueQuery>;
+}
+
+const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
+   const searchParams = await asyncSearchParams;
    const statuses = Object.values(Status);
-   const status = statuses.includes(currentSearchParams.status as Status)
-      ? currentSearchParams.status
-      : undefined;
-   const page = currentSearchParams.page || "1";
 
-   const columns: { label: string; value: keyof Issue; className?: string }[] =
-      [
-         { label: "Issue", value: "title" },
-         {
-            label: "Status",
-            value: "status",
-            className: "hidden md:table-cell",
-         },
-         {
-            label: "Created",
-            value: "createdAt",
-            className: "hidden md:table-cell",
-         },
-      ];
+   const status = statuses.includes(searchParams.status as Status)
+      ? searchParams.status
+      : undefined;
+   const page = searchParams.page || "1";
 
    const pageSize = 10;
 
-   const orderBy = columns
-      ?.map((column) => column.value)
-      .includes(currentSearchParams.orderBy as keyof Issue)
-      ? { [currentSearchParams.orderBy]: "asc" }
+   const orderBy = columnNames.includes(searchParams.orderBy as keyof Issue)
+      ? { [searchParams.orderBy]: "asc" }
       : undefined;
 
    const issues = await prisma.issue.findMany({
@@ -56,52 +42,7 @@ const IssuesPage = async ({
    return (
       <Flex direction="column" gap="4">
          <IssueActions />
-         <Table.Root variant="surface">
-            <Table.Header>
-               <Table.Row>
-                  {columns.map((column) => (
-                     <Table.ColumnHeaderCell
-                        key={column.value}
-                        className={column.className}
-                     >
-                        <NextLink
-                           href={{
-                              query: {
-                                 ...currentSearchParams,
-                                 orderBy: column.value,
-                              },
-                           }}
-                        >
-                           {column.label}
-                        </NextLink>
-                        {column.value == currentSearchParams.orderBy ? (
-                           <IoArrowUp className="inline" />
-                        ) : (
-                           <></>
-                        )}
-                     </Table.ColumnHeaderCell>
-                  ))}
-               </Table.Row>
-            </Table.Header>
-            <Table.Body>
-               {issues.map((issue) => (
-                  <Table.Row key={issue.id}>
-                     <Table.Cell>
-                        <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-                        <p className="md:hidden">
-                           <IssueBadge status={issue.status} />
-                        </p>
-                     </Table.Cell>
-                     <Table.Cell className="hidden md:table-cell">
-                        <IssueBadge status={issue.status} />
-                     </Table.Cell>
-                     <Table.Cell className="hidden md:table-cell">
-                        {issue.createdAt.toDateString()}
-                     </Table.Cell>
-                  </Table.Row>
-               ))}
-            </Table.Body>
-         </Table.Root>
+         <IssuesTable searchParams={searchParams} issues={issues} />
          <Flex justify="end">
             <Pagination
                currentPage={parseInt(page)}
