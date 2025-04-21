@@ -9,7 +9,7 @@ import QueryClientProvider from "./QueryClientProvider";
 
 const poppins = Poppins({
    variable: "--font-poppins",
-   weight: ["100", "300", "400", "700", "900"],
+   weight: ["100", "300", "400", "500", "600", "700", "900"],
    subsets: ["latin"],
 });
 

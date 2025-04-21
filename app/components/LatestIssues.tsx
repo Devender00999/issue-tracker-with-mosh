@@ -11,7 +11,7 @@ const LatestIssues = async () => {
    });
    return (
       <Card>
-         <Heading className="px-2 mb-2">Latest issues</Heading>
+         <Heading size="4" className="px-2 mb-2">Latest issues</Heading>
          <Table.Root>
             <Table.Body>
                {issues.map((issue) => (
