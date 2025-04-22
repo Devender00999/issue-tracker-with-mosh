@@ -6,8 +6,11 @@ import AssigneeSelect from "../_components/AssigneeSelect";
 import DeleteIssueButton from "../_components/DeleteIssueButton";
 import EditIssueButton from "../_components/EditIssueButton";
 import IssueDetails from "../IssueDetails";
-
-const IssuePage = async ({ params }: { params: Promise<{ id: string }> }) => {
+import { Metadata } from "next";
+interface Props {
+   params: Promise<{ id: string }>;
+}
+const IssuePage = async ({ params }: Props) => {
    const { id } = await params;
 
    const session = await getServerSession();
@@ -37,3 +40,12 @@ const IssuePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 };
 
 export default IssuePage;
+
+export const generateMetadata = async ({
+   params,
+}: Props): Promise<Metadata> => {
+   const { id } = await params;
+   const issue = await prisma.issue.findUnique({ where: { id: parseInt(id) } });
+
+   return { title: issue?.title, description: issue?.description };
+};
