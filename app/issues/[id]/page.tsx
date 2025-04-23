@@ -7,17 +7,22 @@ import DeleteIssueButton from "../_components/DeleteIssueButton";
 import EditIssueButton from "../_components/EditIssueButton";
 import IssueDetails from "../IssueDetails";
 import { Metadata } from "next";
+import { cache } from "react";
 interface Props {
    params: Promise<{ id: string }>;
 }
+
+const fetchIssue = cache((id: string) =>
+   prisma.issue.findUnique({
+      where: { id: parseInt(id) },
+   })
+);
 const IssuePage = async ({ params }: Props) => {
    const { id } = await params;
 
    const session = await getServerSession();
 
-   const issue = await prisma.issue.findUnique({
-      where: { id: parseInt(id) },
-   });
+   const issue = await fetchIssue(id);
 
    if (!issue) notFound();
 
@@ -45,7 +50,7 @@ export const generateMetadata = async ({
    params,
 }: Props): Promise<Metadata> => {
    const { id } = await params;
-   const issue = await prisma.issue.findUnique({ where: { id: parseInt(id) } });
+   const issue = await fetchIssue(id);
 
    return { title: issue?.title, description: issue?.description };
 };
