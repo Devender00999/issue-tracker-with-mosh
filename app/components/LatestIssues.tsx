@@ -11,7 +11,9 @@ const LatestIssues = async () => {
    });
    return (
       <Card>
-         <Heading size="4" className="px-2 mb-2">Latest issues</Heading>
+         <Heading size="4" className="px-2 mb-2">
+            Latest issues
+         </Heading>
          <Table.Root>
             <Table.Body>
                {issues.map((issue) => (
@@ -27,11 +29,11 @@ const LatestIssues = async () => {
                               </Link>
                               <IssueBadge status={issue.status} />
                            </Flex>
-                           {issue.assignedToUser && (
+                           {issue?.assignedToUser && (
                               <Avatar
                                  size="2"
                                  fallback="?"
-                                 src={issue.assignedToUser?.image!}
+                                 src={issue.assignedToUser.image!}
                                  radius="full"
                               />
                            )}

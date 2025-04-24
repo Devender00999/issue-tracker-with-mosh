@@ -10,6 +10,7 @@ export interface IssueQuery {
    status?: string;
    orderBy: string;
    page?: string;
+   limit?: string;
 }
 interface Props {
    searchParams: Promise<IssueQuery>;
@@ -23,8 +24,7 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
       ? searchParams.status
       : undefined;
    const page = searchParams.page || "1";
-
-   const pageSize = 10;
+   const limit = searchParams.limit || "10";
 
    const orderBy = columnNames.includes(searchParams.orderBy as keyof Issue)
       ? { [searchParams.orderBy]: "asc" }
@@ -33,8 +33,8 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
    const issues = await prisma.issue.findMany({
       where: { status: status as Status },
       orderBy,
-      skip: (parseInt(page) - 1) * pageSize,
-      take: pageSize,
+      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: parseInt(limit),
    });
    const totalCount = await prisma.issue.count({
       where: { status: status as Status },
@@ -48,7 +48,7 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
             <Pagination
                currentPage={parseInt(page)}
                itemCounts={totalCount}
-               pageSize={pageSize}
+               pageSize={parseInt(limit)}
             />
          </Flex>
       </Flex>

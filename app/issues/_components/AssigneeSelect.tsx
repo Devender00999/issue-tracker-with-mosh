@@ -13,7 +13,7 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
          .patch(`/api/issues/${issue.id}`, {
             assignedToUserId: currentUser == "unassigned" ? null : currentUser,
          })
-         .catch((err) => {
+         .catch(() => {
             toast.error("Could not assign issue.");
          });
    return (
