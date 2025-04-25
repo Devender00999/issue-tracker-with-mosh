@@ -11,6 +11,7 @@ export interface IssueQuery {
    orderBy: string;
    page?: string;
    limit?: string;
+   assigneeId?: string;
 }
 interface Props {
    searchParams: Promise<IssueQuery>;
@@ -23,6 +24,10 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
    const status = statuses.includes(searchParams.status as Status)
       ? searchParams.status
       : undefined;
+
+   const assigneeId = searchParams.assigneeId
+      ? searchParams.assigneeId
+      : undefined;
    const page = searchParams.page || "1";
    const limit = searchParams.limit || "10";
 
@@ -31,7 +36,7 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
       : undefined;
 
    const issues = await prisma.issue.findMany({
-      where: { status: status as Status },
+      where: { status: status as Status, assignedToUserId: assigneeId },
       orderBy,
       skip: (parseInt(page) - 1) * parseInt(limit),
       take: parseInt(limit),

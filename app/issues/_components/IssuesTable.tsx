@@ -54,6 +54,9 @@ const IssuesTable = ({ searchParams, issues }: Props) => {
                   <Table.Cell className="hidden md:table-cell">
                      {issue.createdAt.toDateString()}
                   </Table.Cell>
+                  <Table.Cell className="hidden md:table-cell">
+                     {issue.assignedToUserId}
+                  </Table.Cell>
                </Table.Row>
             ))}
          </Table.Body>
@@ -71,6 +74,11 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
    {
       label: "Created",
       value: "createdAt",
+      className: "hidden md:table-cell",
+   },
+   {
+      label: "Assignee",
+      value: "assignedToUserId",
       className: "hidden md:table-cell",
    },
 ];
