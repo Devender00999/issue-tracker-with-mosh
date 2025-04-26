@@ -1,19 +1,27 @@
 "use client";
-import { Issue, User } from "@prisma/client";
+import { Issue, Status, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
    const { data: users } = useUsers();
+   const router = useRouter();
 
    const handleAssignIssue = (currentUser: string) =>
       axios
          .patch(`/api/issues/${issue.id}`, {
             assignedToUserId: currentUser == "unassigned" ? null : currentUser,
+            status:
+               currentUser == "unassigned" ? Status.OPEN : Status.IN_PROGRESS,
          })
-         .catch(() => {
+         .then(() => {
+            router.refresh();
+         })
+         .catch((err) => {
+            console.log(err);
             toast.error("Could not assign issue.");
          });
    return (
