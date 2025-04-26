@@ -1,5 +1,6 @@
 "use client";
-import { Issue, User } from "@prisma/client";
+import { prisma } from "@/prisma/client";
+import { Issue, Status, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -12,6 +13,14 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
       axios
          .patch(`/api/issues/${issue.id}`, {
             assignedToUserId: currentUser == "unassigned" ? null : currentUser,
+         })
+         .then((res) => {
+            prisma.issue
+               .update({
+                  where: { id: issue.id },
+                  data: { status: Status.IN_PROGRESS },
+               })
+               .catch(() => toast.error("Error in updating status."));
          })
          .catch(() => {
             toast.error("Could not assign issue.");
