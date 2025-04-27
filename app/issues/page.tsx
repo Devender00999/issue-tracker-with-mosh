@@ -36,13 +36,20 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
       : undefined;
 
    const issues = await prisma.issue.findMany({
-      where: { status: status as Status, assignedToUserId: assigneeId },
+      where: {
+         status: status as Status,
+         assignedToUserId: assigneeId === "unassigned" ? undefined : assigneeId,
+      },
       orderBy: orderBy || { updatedAt: "desc" },
       skip: (parseInt(page) - 1) * parseInt(limit),
       take: parseInt(limit),
    });
    const totalCount = await prisma.issue.count({
-      where: { status: status as Status, assignedToUserId: assigneeId },
+      where: {
+         status: status as Status,
+
+         assignedToUserId: assigneeId === "unassigned" ? undefined : assigneeId,
+      },
    });
 
    return (

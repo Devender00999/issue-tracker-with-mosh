@@ -28,6 +28,7 @@ const AssigneeFilter = ({ assignees }: { assignees: User[] }) => {
       >
          <Select.Trigger placeholder="Filter by Assignee..." />
          <Select.Content>
+            <Select.Item value="unassigned">Unassigned</Select.Item>
             {assignees.map((user) => (
                <Select.Item key={user.id} value={user.id}>
                   {user.name}
