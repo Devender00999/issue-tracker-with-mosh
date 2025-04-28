@@ -8,6 +8,7 @@ import EditIssueButton from "../_components/EditIssueButton";
 import IssueDetails from "../IssueDetails";
 import { Metadata } from "next";
 import { cache } from "react";
+import UpdateStatus from "../_components/UpdateStatus";
 interface Props {
    params: Promise<{ id: string }>;
 }
@@ -34,6 +35,7 @@ const IssuePage = async ({ params }: Props) => {
          {session && (
             <Box className="">
                <Flex direction={"column"} gap="4">
+                  <UpdateStatus issue={issue} />
                   <AssigneeSelect issue={issue} />
                   <EditIssueButton issueId={issue.id} />
                   <DeleteIssueButton issueId={issue.id} />
