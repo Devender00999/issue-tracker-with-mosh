@@ -1,9 +1,10 @@
 import { IssueBadge } from "@/app/components";
 import { Issue } from "@prisma/client";
-import { Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import { default as Link, default as NextLink } from "next/link";
-import { IoArrowUp } from "react-icons/io5";
+import { FaSortUp, FaSortDown } from "react-icons/fa";
 import { IssueQuery } from "../page";
+import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
 
 interface Props {
    searchParams: IssueQuery;
@@ -18,7 +19,7 @@ const IssuesTable = ({ searchParams, issues }: Props) => {
                {columns.map((column) => (
                   <Table.ColumnHeaderCell
                      key={column.value}
-                     className={column.className}
+                     className={`${column.className} flex`}
                   >
                      <NextLink
                         href={{
@@ -31,7 +32,20 @@ const IssuesTable = ({ searchParams, issues }: Props) => {
                         {column.label}
                      </NextLink>
                      {column.value == searchParams.orderBy ? (
-                        <IoArrowUp className="inline" />
+                        <Flex
+                           className="inline-flex"
+                           direction="column"
+                           gap="0"
+                           style={{ marginLeft: 10 }}
+                        >
+                           <AiOutlineCaretUp
+                              color="#a9a9a9"
+                              size={12}
+                              style={{ marginBottom: -4 }}
+                           />
+
+                           <AiOutlineCaretDown color="#a9a9a9" size={12} />
+                        </Flex>
                      ) : (
                         <></>
                      )}
