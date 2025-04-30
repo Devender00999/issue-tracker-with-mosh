@@ -12,6 +12,7 @@ export interface IssueQuery {
    page?: string;
    limit?: string;
    assigneeId?: string;
+   order?: "asc" | "desc";
 }
 interface Props {
    searchParams: Promise<IssueQuery>;
@@ -30,9 +31,10 @@ const IssuesPage = async ({ searchParams: asyncSearchParams }: Props) => {
       : undefined;
    const page = searchParams.page || "1";
    const limit = searchParams.limit || "10";
+   const sortOrder = searchParams.order || "asc";
 
    const orderBy = columnNames.includes(searchParams.orderBy as keyof Issue)
-      ? { [searchParams.orderBy]: "asc" }
+      ? { [searchParams.orderBy]: sortOrder }
       : undefined;
 
    const issues = await prisma.issue.findMany({

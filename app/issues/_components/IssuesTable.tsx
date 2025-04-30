@@ -19,36 +19,56 @@ const IssuesTable = ({ searchParams, issues }: Props) => {
                {columns.map((column) => (
                   <Table.ColumnHeaderCell
                      key={column.value}
-                     className={`${column.className} flex`}
+                     className={`${column.className}`}
                   >
                      <NextLink
                         href={{
                            query: {
                               ...searchParams,
-                              orderBy: column.value,
+                              orderBy:
+                                 searchParams.order != "desc"
+                                    ? column.value
+                                    : undefined,
+                              order:
+                                 searchParams.order === "asc"
+                                    ? "desc"
+                                    : searchParams.order === "desc"
+                                    ? undefined
+                                    : "asc",
                            },
                         }}
                      >
-                        {column.label}
-                     </NextLink>
-                     {column.value == searchParams.orderBy ? (
-                        <Flex
-                           className="inline-flex"
-                           direction="column"
-                           gap="0"
-                           style={{ marginLeft: 10 }}
-                        >
-                           <AiOutlineCaretUp
-                              color="#a9a9a9"
-                              size={12}
-                              style={{ marginBottom: -4 }}
-                           />
-
-                           <AiOutlineCaretDown color="#a9a9a9" size={12} />
+                        <Flex gap="2">
+                           {column.label}
+                           {column.value == searchParams.orderBy ? (
+                              <Flex
+                                 className="inline-flex"
+                                 direction="column"
+                                 gap="0"
+                              >
+                                 <AiOutlineCaretUp
+                                    color={
+                                       searchParams?.order === "asc"
+                                          ? "black"
+                                          : "#a9a9a9"
+                                    }
+                                    size={12}
+                                    style={{ marginBottom: -4 }}
+                                 />
+                                 <AiOutlineCaretDown
+                                    color={
+                                       searchParams?.order === "desc"
+                                          ? "black"
+                                          : "#a9a9a9"
+                                    }
+                                    size={12}
+                                 />
+                              </Flex>
+                           ) : (
+                              <></>
+                           )}
                         </Flex>
-                     ) : (
-                        <></>
-                     )}
+                     </NextLink>
                   </Table.ColumnHeaderCell>
                ))}
             </Table.Row>
