@@ -21,3 +21,9 @@ export const patchIssueSchema = z.object({
       .nullable(),
    status: z.enum(Object.values(Status) as [string])?.optional(),
 });
+
+const createCommentSchema = z.object({
+   comment: z.string().min(1, "Comment cannot be empty"),
+   userId: z.string().max(255),
+   issueId: z.number().int(),
+});
