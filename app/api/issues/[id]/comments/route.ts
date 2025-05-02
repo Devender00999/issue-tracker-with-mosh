@@ -14,7 +14,6 @@ export async function POST(
    }
 
    const body = await request.json();
-   console.log(request.body, body);
    const validation = createCommentSchema.safeParse(body);
    if (!validation.success)
       return NextResponse.json(validation.error.format(), { status: 400 });

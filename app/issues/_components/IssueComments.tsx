@@ -1,20 +1,13 @@
 "use client";
 import { Comment, User } from "@prisma/client";
-import {
-   Avatar,
-   Button,
-   Flex,
-   Separator,
-   Text,
-   TextArea,
-   TextField,
-} from "@radix-ui/themes";
+import { Avatar, Button, Flex, Text, TextArea } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
 dayjs.extend(relativeTime);
 
@@ -28,14 +21,33 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
       queryFn: () =>
          axios.get(`/api/issues/${issueId}/comments`).then((res) => res.data),
    });
+   const [commentId, setCommentId] = useState<null | number>(null);
 
    const handleCreateComment = async () => {
       try {
-         await axios.post(`/api/issues/${issueId}/comments`, {
-            comment,
-         });
+         if (!commentId) {
+            await axios.post(`/api/issues/${issueId}/comments`, {
+               comment,
+            });
+         } else {
+            await axios.patch(`/api/issues/${issueId}/comments/${commentId}`, {
+               comment,
+            });
+            setCommentId(null);
+         }
          refetchComments();
          setComment("");
+      } catch (err) {
+         console.log(err);
+      }
+   };
+
+   const handleDeleteComment = async (commentId: number) => {
+      console.log({ commentId });
+      try {
+         await axios.delete(`/api/issues/${issueId}/comments/${commentId}`);
+         refetchComments();
+         toast.success("Comment deleted successfully.");
       } catch (err) {
          console.log(err);
       }
@@ -69,7 +81,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                         onClick={handleCreateComment}
                         style={{ width: "max-content" }}
                      >
-                        Post comment
+                        {commentId ? "Update" : "Post"} comment
                      </Button>
                   </Flex>
                </Flex>
@@ -127,6 +139,10 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                                  size="1"
                                  style={{ cursor: "pointer" }}
                                  weight="medium"
+                                 onClick={() => {
+                                    setComment(comment.comment);
+                                    setCommentId(comment.id);
+                                 }}
                               >
                                  Edit
                               </Text>
@@ -134,6 +150,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                                  size="1"
                                  style={{ cursor: "pointer" }}
                                  weight="medium"
+                                 onClick={() => handleDeleteComment(comment.id)}
                               >
                                  Delete
                               </Text>
@@ -144,6 +161,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                </Flex>
             ))}
          </Flex>
+         <Toaster />
       </Flex>
    );
 };
