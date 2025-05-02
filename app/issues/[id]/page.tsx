@@ -9,6 +9,7 @@ import IssueDetails from "../IssueDetails";
 import { Metadata } from "next";
 import { cache } from "react";
 import UpdateStatus from "../_components/UpdateStatus";
+import IssueComments from "../_components/IssueComments";
 interface Props {
    params: Promise<{ id: string }>;
 }
@@ -29,9 +30,10 @@ const IssuePage = async ({ params }: Props) => {
 
    return (
       <Grid columns={{ initial: "1", sm: "5" }} gap={"30px"}>
-         <Box className="md:col-span-4">
+         <Flex className="md:col-span-4" direction="column" gap="3">
             <IssueDetails issue={issue} />
-         </Box>
+            <IssueComments />
+         </Flex>
          {session && (
             <Box className="">
                <Flex direction={"column"} gap="4">
