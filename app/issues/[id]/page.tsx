@@ -32,7 +32,7 @@ const IssuePage = async ({ params }: Props) => {
       <Grid columns={{ initial: "1", sm: "5" }} gap={"30px"}>
          <Flex className="md:col-span-4" direction="column" gap="3">
             <IssueDetails issue={issue} />
-            <IssueComments />
+            <IssueComments issueId={issue.id} />
          </Flex>
          {session && (
             <Box className="">
