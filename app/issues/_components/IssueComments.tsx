@@ -121,18 +121,18 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                         {comment.comment}
                      </Text>
                      <Flex gap="3" style={{ marginTop: 5 }} align="center">
-                        <AiFillLike
+                        {/* <AiFillLike
                            color="var(--accent-9)"
                            cursor={"pointer"}
-                        />
+                        /> */}
 
-                        <Text
+                        {/* <Text
                            size="1"
                            style={{ cursor: "pointer" }}
                            weight="medium"
                         >
                            Reply
-                        </Text>
+                        </Text> */}
                         {data?.user?.email === comment.user.email && (
                            <>
                               <Text
