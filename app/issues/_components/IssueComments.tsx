@@ -126,7 +126,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                            )}
                         </Text>
                         <Text size="1" color="gray" weight="medium">
-                           {dayjs(comment.updatedAt).fromNow()}
+                           {dayjs(comment.createdAt).fromNow()}
                         </Text>
                      </Flex>
                      <Text style={{ maxWidth: 400 }} size="2">
