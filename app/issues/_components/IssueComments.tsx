@@ -1,6 +1,6 @@
 "use client";
 import { Comment, User } from "@prisma/client";
-import { Avatar, Button, Flex, Text, TextArea } from "@radix-ui/themes";
+import { Avatar, Badge, Button, Flex, Text, TextArea } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -22,6 +22,18 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
          axios.get(`/api/issues/${issueId}/comments`).then((res) => res.data),
    });
    const [commentId, setCommentId] = useState<null | number>(null);
+
+   const handleLike = async (commentId: number) => {
+      try {
+         await axios.post(
+            `/api/issues/${issueId}/comments/${commentId}/likes`,
+            {}
+         );
+         refetchComments();
+      } catch (err) {
+         console.log(err);
+      }
+   };
 
    const handleCreateComment = async () => {
       try {
@@ -121,10 +133,20 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                         {comment.comment}
                      </Text>
                      <Flex gap="3" style={{ marginTop: 5 }} align="center">
-                        {/* <AiFillLike
-                           color="var(--accent-9)"
-                           cursor={"pointer"}
-                        /> */}
+                        <Badge variant="solid" radius="full" color="indigo">
+                           <Flex align="center" justify="center" gap="1">
+                              <AiFillLike
+                                 onClick={() => handleLike(comment.id)}
+                                 cursor={"pointer"}
+                              />
+                              <Text
+                                 size="1"
+                                 style={{ paddingRight: 4, paddingBottom: 2 }}
+                              >
+                                 {comment.upvotes ? <>{comment.upvotes}</> : ""}
+                              </Text>
+                           </Flex>
+                        </Badge>
 
                         {/* <Text
                            size="1"
