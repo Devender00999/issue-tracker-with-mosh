@@ -19,7 +19,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
    >({
       queryKey: ["issues", issueId, "comments"],
       queryFn: () =>
-         axios.get(`/api/issues/${issueId}/comments`).then((res) => res.data),
+         axios.get(`/api/comments/${issueId}`).then((res) => res.data),
    });
    const [commentId, setCommentId] = useState<null | number>(null);
 
@@ -38,8 +38,9 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
    const handleCreateComment = async () => {
       try {
          if (!commentId) {
-            await axios.post(`/api/issues/${issueId}/comments`, {
+            await axios.post(`/api/comments`, {
                comment,
+               issueId,
             });
          } else {
             await axios.patch(`/api/issues/${issueId}/comments/${commentId}`, {

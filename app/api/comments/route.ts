@@ -1,0 +1,34 @@
+import { authOptions } from "@/app/Auth";
+import { createCommentSchema } from "@/app/validationSchemas";
+import { prisma } from "@/prisma/client";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request: NextRequest) {
+   const session = await getServerSession(authOptions);
+   if (!session?.user) {
+      return new Response("Unauthorized", { status: 401 });
+   }
+
+   const body = await request.json();
+   const validation = createCommentSchema.safeParse(body);
+   if (!validation.success)
+      return NextResponse.json(validation.error.format(), { status: 400 });
+
+   console.log(session.user, session);
+
+   const user = await prisma.user.findUnique({
+      where: { email: session.user.email! },
+   });
+
+   const { comment, issueId } = body;
+   const res = await prisma.comment.create({
+      data: { comment, userId: user?.id!, issueId: parseInt(issueId) },
+   });
+
+   await prisma.user.update({
+      where: { email: session.user.email! },
+      data: { likedComments: { connect: { id: res.id } } },
+   });
+   return NextResponse.json(res);
+}
