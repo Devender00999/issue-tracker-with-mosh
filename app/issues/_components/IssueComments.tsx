@@ -21,6 +21,12 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
       queryFn: () =>
          axios.get(`/api/comments/${issueId}`).then((res) => res.data),
    });
+
+   const { data: likedComments } = useQuery({
+      queryKey: ["likedComments"],
+      queryFn: () =>
+         axios.get(`/api/users/likedComments`).then((res) => res.data),
+   });
    const [commentId, setCommentId] = useState<null | number>(null);
 
    const handleLike = async (commentId: number) => {
@@ -134,10 +140,29 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                         {comment.comment}
                      </Text>
                      <Flex gap="3" style={{ marginTop: 5 }} align="center">
-                        <Badge variant="solid" radius="full" color="indigo">
+                        <Badge
+                           variant="solid"
+                           radius="full"
+                           color={
+                              likedComments.likedComments?.findIndex(
+                                 (item: any) => {
+                                    console.log({ d: item.id, c: comment.id });
+                                    return item.id != comment.id;
+                                 }
+                              ) > -1
+                                 ? "indigo"
+                                 : "gray"
+                           }
+                        >
                            <Flex align="center" justify="center" gap="1">
                               <AiFillLike
-                                 onClick={() => handleLike(comment.id)}
+                                 onClick={() =>
+                                    (likedComments.likedComments?.findIndex(
+                                       (item: any) => item.id != comment.id
+                                    ) || -1) > -1
+                                       ? {}
+                                       : handleLike(comment.id)
+                                 }
                                  cursor={"pointer"}
                               />
                               <Text

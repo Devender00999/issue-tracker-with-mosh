@@ -14,3 +14,4 @@ export const GET = async (request: NextRequest) => {
    });
    return NextResponse.json(likedComments);
 };
+   
