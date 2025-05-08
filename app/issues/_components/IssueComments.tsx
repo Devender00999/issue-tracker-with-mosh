@@ -11,7 +11,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
 dayjs.extend(relativeTime);
 
-const IssueComments = ({ issueId }: { issueId: number }) => {
+const IssueComments = ({
+   issueId,
+   likedComments,
+}: {
+   issueId: number;
+   likedComments: Comment[];
+}) => {
+   console.log("Lik", likedComments);
    const { data } = useSession();
    const [comment, setComment] = useState("");
    const { data: comments, refetch: refetchComments } = useQuery<
@@ -19,22 +26,19 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
    >({
       queryKey: ["issues", issueId, "comments"],
       queryFn: () =>
-         axios.get(`/api/comments/${issueId}`).then((res) => res.data),
+         axios.get(`/api/comments?issueId=` + issueId).then((res) => res.data),
    });
 
-   const { data: likedComments } = useQuery({
-      queryKey: ["likedComments"],
-      queryFn: () =>
-         axios.get(`/api/users/likedComments`).then((res) => res.data),
-   });
+   // const { data: likedComments } = useQuery({
+   //    queryKey: ["likedComments"],
+   //    queryFn: () =>
+   //       axios.get(`/api/users/likedComments`).then((res) => res.data),
+   // });
    const [commentId, setCommentId] = useState<null | number>(null);
 
    const handleLike = async (commentId: number) => {
       try {
-         await axios.post(
-            `/api/issues/${issueId}/comments/${commentId}/likes`,
-            {}
-         );
+         await axios.post(`/api/comments/${commentId}/likes`, {});
          refetchComments();
       } catch (err) {
          console.log(err);
@@ -144,12 +148,10 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                            variant="solid"
                            radius="full"
                            color={
-                              likedComments.likedComments?.findIndex(
-                                 (item: any) => {
-                                    console.log({ d: item.id, c: comment.id });
-                                    return item.id != comment.id;
-                                 }
-                              ) > -1
+                              likedComments?.findIndex((item: any) => {
+                                 console.log({ d: item.id, c: comment.id });
+                                 return item.id != comment.id;
+                              }) > -1
                                  ? "indigo"
                                  : "gray"
                            }
@@ -157,9 +159,9 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                            <Flex align="center" justify="center" gap="1">
                               <AiFillLike
                                  onClick={() =>
-                                    (likedComments.likedComments?.findIndex(
+                                    likedComments?.findIndex(
                                        (item: any) => item.id != comment.id
-                                    ) || -1) > -1
+                                    ) > -1
                                        ? {}
                                        : handleLike(comment.id)
                                  }

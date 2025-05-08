@@ -26,9 +26,19 @@ export async function POST(request: NextRequest) {
       data: { comment, userId: user?.id!, issueId: parseInt(issueId) },
    });
 
-   await prisma.user.update({
-      where: { email: session.user.email! },
-      data: { likedComments: { connect: { id: res.id } } },
-   });
    return NextResponse.json(res);
+}
+
+export async function GET(request: NextRequest, params: { issueId: string }) {
+   const searchParams = request.nextUrl.searchParams;
+   const issueId = searchParams.get("issueId");
+   const comments = await prisma.comment.findMany({
+      where: { issueId: parseInt(issueId!) },
+      include: { user: { select: { name: true, image: true, email: true } } },
+      orderBy: {
+         updatedAt: "desc",
+      },
+   });
+
+   return NextResponse.json(comments);
 }
