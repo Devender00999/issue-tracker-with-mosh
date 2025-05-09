@@ -152,19 +152,19 @@ const IssueComments = ({
                                  console.log({ d: item.id, c: comment.id });
                                  return item.id != comment.id;
                               }) > -1
-                                 ? "indigo"
+                                 ? undefined
                                  : "gray"
                            }
                         >
                            <Flex align="center" justify="center" gap="1">
                               <AiFillLike
-                                 onClick={() =>
-                                    likedComments?.findIndex(
+                                 onClick={() => {
+                                    const idx = likedComments?.findIndex(
                                        (item: any) => item.id != comment.id
-                                    ) > -1
-                                       ? {}
-                                       : handleLike(comment.id)
-                                 }
+                                    );
+                                    if (idx > -1) return;
+                                    handleLike(comment.id);
+                                 }}
                                  cursor={"pointer"}
                               />
                               <Text
