@@ -29,6 +29,7 @@ const IssueComments = ({
          axios.get(`/api/comments?issueId=` + issueId).then((res) => res.data),
    });
 
+   console.log({ likedComments });
    // const { data: likedComments } = useQuery({
    //    queryKey: ["likedComments"],
    //    queryFn: () =>
