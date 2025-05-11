@@ -6,12 +6,6 @@ export const GET = async (request: NextRequest) => {
    const session = await getServerSession();
    if (!session?.user)
       return NextResponse.json({ message: "Unautherised" }, { status: 401 });
-   const likedComments = await prisma.user.findUnique({
-      where: { email: session.user?.email! },
-      select: {
-         likedComments: true,
-      },
-   });
+   const likedComments = await prisma.likedComment.findMany({});
    return NextResponse.json(likedComments);
 };
-   

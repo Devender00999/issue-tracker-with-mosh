@@ -11,14 +11,17 @@ export async function POST(
       return NextResponse.json({ message: "Unautherised" }, { status: 401 });
 
    const { id } = await params;
-   const res = await prisma.comment.update({
+   const comment = await prisma.comment.update({
       where: { id: parseInt(id) },
       data: { upvotes: { increment: 1 } },
    });
 
-   await prisma.user.update({
+   const user = await prisma.user.findUnique({
       where: { email: session.user.email! },
-      data: { likedComments: { connect: { id: res.id } } },
+   });
+
+   const res = await prisma.likedComment.create({
+      data: { commentId: comment.id, userId: user?.id! },
    });
    return NextResponse.json(res);
 }

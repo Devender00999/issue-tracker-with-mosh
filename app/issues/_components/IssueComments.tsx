@@ -1,11 +1,12 @@
 "use client";
-import { Comment, User } from "@prisma/client";
+import { Comment, LikedComment, User } from "@prisma/client";
 import { Avatar, Badge, Button, Flex, Text, TextArea } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
@@ -16,7 +17,7 @@ const IssueComments = ({
    likedComments,
 }: {
    issueId: number;
-   likedComments: Comment[];
+   likedComments: LikedComment[];
 }) => {
    console.log("Lik", likedComments);
    const { data } = useSession();
@@ -29,6 +30,8 @@ const IssueComments = ({
          axios.get(`/api/comments?issueId=` + issueId).then((res) => res.data),
    });
 
+   const router = useRouter();
+
    console.log({ likedComments });
    // const { data: likedComments } = useQuery({
    //    queryKey: ["likedComments"],
@@ -40,6 +43,7 @@ const IssueComments = ({
    const handleLike = async (commentId: number) => {
       try {
          await axios.post(`/api/comments/${commentId}/likes`, {});
+         router.refresh();
          refetchComments();
       } catch (err) {
          console.log(err);
@@ -54,7 +58,7 @@ const IssueComments = ({
                issueId,
             });
          } else {
-            await axios.patch(`/api/issues/${issueId}/comments/${commentId}`, {
+            await axios.patch(`/api/comments/${commentId}`, {
                comment,
             });
             setCommentId(null);
@@ -69,7 +73,7 @@ const IssueComments = ({
    const handleDeleteComment = async (commentId: number) => {
       console.log({ commentId });
       try {
-         await axios.delete(`/api/issues/${issueId}/comments/${commentId}`);
+         await axios.delete(`/api/comments/${commentId}`);
          refetchComments();
          toast.success("Comment deleted successfully.");
       } catch (err) {
@@ -149,41 +153,30 @@ const IssueComments = ({
                            variant="solid"
                            radius="full"
                            color={
-                              likedComments?.findIndex((item: any) => {
+                              likedComments?.findIndex((item) => {
                                  console.log({ d: item.id, c: comment.id });
-                                 return item.id != comment.id;
+                                 return item.commentId == comment.id;
                               }) > -1
-                                 ? undefined
-                                 : "gray"
+                                 ? "gray"
+                                 : undefined
                            }
                         >
                            <Flex align="center" justify="center" gap="1">
                               <AiFillLike
                                  onClick={() => {
                                     const idx = likedComments?.findIndex(
-                                       (item: any) => item.id != comment.id
+                                       (item) => item.commentId == comment.id
                                     );
                                     if (idx > -1) return;
                                     handleLike(comment.id);
                                  }}
                                  cursor={"pointer"}
                               />
-                              <Text
-                                 size="1"
-                                 style={{ paddingRight: 4, paddingBottom: 2 }}
-                              >
+                              <Text size="1">
                                  {comment.upvotes ? <>{comment.upvotes}</> : ""}
                               </Text>
                            </Flex>
                         </Badge>
-
-                        {/* <Text
-                           size="1"
-                           style={{ cursor: "pointer" }}
-                           weight="medium"
-                        >
-                           Reply
-                        </Text> */}
                         {data?.user?.email === comment.user.email && (
                            <>
                               <Text

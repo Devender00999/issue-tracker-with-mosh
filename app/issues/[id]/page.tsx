@@ -21,11 +21,8 @@ const fetchIssue = cache((id: string) =>
 );
 
 const fetchLikedComments = cache((id: string, email: string) =>
-   prisma.user.findUnique({
-      where: { email: email! },
-      select: {
-         likedComments: true,
-      },
+   prisma.likedComment.findMany({
+      where: { user: { email: email }, comment: { issueId: parseInt(id) } },
    })
 );
 const IssuePage = async ({ params }: Props) => {
@@ -34,8 +31,7 @@ const IssuePage = async ({ params }: Props) => {
    const session = await getServerSession();
 
    const issue = await fetchIssue(id);
-   const likedComments = (await fetchLikedComments(id, session?.user?.email!))
-      ?.likedComments;
+   const likedComments = await fetchLikedComments(id, session?.user?.email!);
    console.log(likedComments);
    if (!issue) notFound();
 
