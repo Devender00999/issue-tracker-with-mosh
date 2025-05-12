@@ -11,17 +11,34 @@ export async function POST(
       return NextResponse.json({ message: "Unautherised" }, { status: 401 });
 
    const { id } = await params;
-   const comment = await prisma.comment.update({
-      where: { id: parseInt(id) },
-      data: { upvotes: { increment: 1 } },
+   const likedComment = await prisma.likedComment.findFirst({
+      where: { commentId: parseInt(id), user: { email: session.user.email! } },
    });
 
-   const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
-   });
+   let res;
+   console.log(likedComment);
+   if (likedComment) {
+      res = await prisma.likedComment.delete({
+         where: { id: likedComment.id },
+      });
+      await prisma.comment.update({
+         where: { id: parseInt(id) },
+         data: { upvotes: { decrement: 1 } },
+      });
+   } else {
+      const comment = await prisma.comment.update({
+         where: { id: parseInt(id) },
+         data: { upvotes: { increment: 1 } },
+      });
 
-   const res = await prisma.likedComment.create({
-      data: { commentId: comment.id, userId: user?.id! },
-   });
+      const user = await prisma.user.findUnique({
+         where: { email: session.user.email! },
+      });
+
+      res = await prisma.likedComment.create({
+         data: { commentId: comment.id, userId: user?.id! },
+      });
+   }
+
    return NextResponse.json(res);
 }

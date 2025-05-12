@@ -42,6 +42,9 @@ const IssueComments = ({
 
    const handleLike = async (commentId: number) => {
       try {
+         if (!data?.user?.email) {
+            router.push("/api/auth/signin");
+         }
          await axios.post(`/api/comments/${commentId}/likes`, {});
          router.refresh();
          refetchComments();
@@ -71,7 +74,6 @@ const IssueComments = ({
    };
 
    const handleDeleteComment = async (commentId: number) => {
-      console.log({ commentId });
       try {
          await axios.delete(`/api/comments/${commentId}`);
          refetchComments();
@@ -149,32 +151,22 @@ const IssueComments = ({
                         {comment.comment}
                      </Text>
                      <Flex gap="3" style={{ marginTop: 5 }} align="center">
-                        <Badge
-                           variant="solid"
-                           radius="full"
-                           color={
-                              likedComments?.findIndex((item) => {
-                                 console.log({ d: item.id, c: comment.id });
-                                 return item.commentId == comment.id;
-                              }) > -1
-                                 ? "gray"
-                                 : undefined
-                           }
-                        >
+                        <Badge variant="solid" radius="full">
                            <Flex align="center" justify="center" gap="1">
                               <AiFillLike
-                                 onClick={() => {
-                                    const idx = likedComments?.findIndex(
-                                       (item) => item.commentId == comment.id
-                                    );
-                                    if (idx > -1) return;
-                                    handleLike(comment.id);
-                                 }}
+                                 onClick={() => handleLike(comment.id)}
                                  cursor={"pointer"}
+                                 fontSize={14}
                               />
-                              <Text size="1">
-                                 {comment.upvotes ? <>{comment.upvotes}</> : ""}
-                              </Text>
+                              {!!comment.upvotes && (
+                                 <Text style={{ fontSize: "9px" }}>
+                                    {comment.upvotes ? (
+                                       <>{comment.upvotes}</>
+                                    ) : (
+                                       ""
+                                    )}
+                                 </Text>
+                              )}
                            </Flex>
                         </Badge>
                         {data?.user?.email === comment.user.email && (
