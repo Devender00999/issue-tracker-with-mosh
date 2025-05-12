@@ -20,29 +20,19 @@ const fetchIssue = cache((id: string) =>
    })
 );
 
-const fetchLikedComments = cache((id: string, email: string) =>
-   prisma.likedComment.findMany({
-      where: { user: { email: email }, comment: { issueId: parseInt(id) } },
-   })
-);
 const IssuePage = async ({ params }: Props) => {
    const { id } = await params;
 
    const session = await getServerSession();
 
    const issue = await fetchIssue(id);
-   const likedComments = await fetchLikedComments(id, session?.user?.email!);
-   console.log(likedComments);
    if (!issue) notFound();
 
    return (
       <Grid columns={{ initial: "1", sm: "5" }} gap={"30px"}>
          <Flex className="md:col-span-4" direction="column" gap="3">
             <IssueDetails issue={issue} />
-            <IssueComments
-               issueId={issue.id}
-               likedComments={likedComments as any}
-            />
+            <IssueComments issueId={issue.id} />
          </Flex>
          {session && (
             <Box className="">

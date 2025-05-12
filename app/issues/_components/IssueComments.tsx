@@ -12,14 +12,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
 dayjs.extend(relativeTime);
 
-const IssueComments = ({
-   issueId,
-   likedComments,
-}: {
-   issueId: number;
-   likedComments: LikedComment[];
-}) => {
-   console.log("Lik", likedComments);
+const IssueComments = ({ issueId }: { issueId: number }) => {
    const { data } = useSession();
    const [comment, setComment] = useState("");
    const { data: comments, refetch: refetchComments } = useQuery<
@@ -32,12 +25,6 @@ const IssueComments = ({
 
    const router = useRouter();
 
-   console.log({ likedComments });
-   // const { data: likedComments } = useQuery({
-   //    queryKey: ["likedComments"],
-   //    queryFn: () =>
-   //       axios.get(`/api/users/likedComments`).then((res) => res.data),
-   // });
    const [commentId, setCommentId] = useState<null | number>(null);
 
    const handleLike = async (commentId: number) => {
