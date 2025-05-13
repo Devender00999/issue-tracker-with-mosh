@@ -28,6 +28,7 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
       <>
          <Select.Root
             onValueChange={handleAssignIssue}
+            disabled={issue.status === "CLOSED"}
             defaultValue={issue.assignedToUserId || ""}
          >
             <Select.Trigger placeholder="Assign..." />

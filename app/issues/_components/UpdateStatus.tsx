@@ -23,6 +23,7 @@ const UpdateStatus = ({ issue }: { issue: Issue }) => {
       <Select.Root
          defaultValue={issue.status}
          onValueChange={handleUpdateStatus}
+         disabled={issue.status === "CLOSED"}
       >
          <Select.Trigger />
          <Select.Content>
