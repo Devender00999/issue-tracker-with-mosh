@@ -10,11 +10,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
+import CommentItem from "./Comment";
 dayjs.extend(relativeTime);
 
 const IssueComments = ({ issueId }: { issueId: number }) => {
    const { data } = useSession();
-   const [comment, setComment] = useState("");
+   const [commentText, setCommentText] = useState("");
    const { data: comments, refetch: refetchComments } = useQuery<
       (Comment & { user: User })[]
    >({
@@ -44,17 +45,17 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
       try {
          if (!commentId) {
             await axios.post(`/api/comments`, {
-               comment,
+               comment: commentText,
                issueId,
             });
          } else {
             await axios.patch(`/api/comments/${commentId}`, {
-               comment,
+               comment: commentText,
             });
             setCommentId(null);
          }
          refetchComments();
-         setComment("");
+         setCommentText("");
       } catch (err) {
          console.log(err);
       }
@@ -91,8 +92,8 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                      <TextArea
                         style={{ width: "100%", maxWidth: 500 }}
                         placeholder="Add a comment..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
                      />
                      <Button
                         onClick={handleCreateComment}
@@ -112,76 +113,17 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
             </>
          )}
          <Flex direction="column" gap="5">
-            {comments?.map((comment) => (
-               <Flex width="100%" gap="4" key={comment.id}>
-                  <Avatar
-                     src={comment.user.image!}
-                     radius="full"
-                     fallback="?"
-                     size="2"
-                     alt="?"
-                  />
-                  <Flex width="100%" direction="column" gap="2px">
-                     <Flex align="baseline" gap="1">
-                        <Text size="2" weight="medium">
-                           @
-                           {comment.user.email?.slice(
-                              0,
-                              comment.user.email.indexOf("@")
-                           )}
-                        </Text>
-                        <Text size="1" color="gray" weight="medium">
-                           {dayjs(comment.createdAt).fromNow()}
-                        </Text>
-                     </Flex>
-                     <Text style={{ maxWidth: 400 }} size="2">
-                        {comment.comment}
-                     </Text>
-                     <Flex gap="3" style={{ marginTop: 5 }} align="center">
-                        <Badge variant="solid" radius="full">
-                           <Flex align="center" justify="center" gap="1">
-                              <AiFillLike
-                                 onClick={() => handleLike(comment.id)}
-                                 cursor={"pointer"}
-                                 fontSize={14}
-                              />
-                              {!!comment.upvotes && (
-                                 <Text style={{ fontSize: "9px" }}>
-                                    {comment.upvotes ? (
-                                       <>{comment.upvotes}</>
-                                    ) : (
-                                       ""
-                                    )}
-                                 </Text>
-                              )}
-                           </Flex>
-                        </Badge>
-                        {data?.user?.email === comment.user.email && (
-                           <>
-                              <Text
-                                 size="1"
-                                 style={{ cursor: "pointer" }}
-                                 weight="medium"
-                                 onClick={() => {
-                                    setComment(comment.comment);
-                                    setCommentId(comment.id);
-                                 }}
-                              >
-                                 Edit
-                              </Text>
-                              <Text
-                                 size="1"
-                                 style={{ cursor: "pointer" }}
-                                 weight="medium"
-                                 onClick={() => handleDeleteComment(comment.id)}
-                              >
-                                 Delete
-                              </Text>
-                           </>
-                        )}
-                     </Flex>
-                  </Flex>
-               </Flex>
+            {comments?.map((currentComment) => (
+               <CommentItem
+                  comment={currentComment}
+                  handleDeleteComment={handleDeleteComment}
+                  handleLike={handleLike}
+                  isCurrentUser={
+                     data?.user?.email === currentComment.user.email
+                  }
+                  key={currentComment.id}
+                  setCommentId={setCommentId}
+               />
             ))}
          </Flex>
          <Toaster />
