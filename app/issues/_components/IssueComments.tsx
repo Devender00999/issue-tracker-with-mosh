@@ -11,11 +11,11 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiFillLike } from "react-icons/ai";
 import CommentItem from "./Comment";
+import CommentInput from "./CommentInput";
 dayjs.extend(relativeTime);
 
 const IssueComments = ({ issueId }: { issueId: number }) => {
    const { data } = useSession();
-   const [commentText, setCommentText] = useState("");
    const { data: comments, refetch: refetchComments } = useQuery<
       (Comment & { user: User })[]
    >({
@@ -41,7 +41,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
       }
    };
 
-   const handleCreateComment = async () => {
+   const handleCreateComment = async (commentText: string) => {
       try {
          if (!commentId) {
             await axios.post(`/api/comments`, {
@@ -55,7 +55,6 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
             setCommentId(null);
          }
          refetchComments();
-         setCommentText("");
       } catch (err) {
          console.log(err);
       }
@@ -78,40 +77,10 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                ? `${comments.length} Comments`
                : "No Comments available"}
          </Text>
-
-         {data?.user && (
-            <>
-               <Flex width="100%" gap="4">
-                  <Avatar
-                     src={data?.user?.image!}
-                     radius="full"
-                     fallback="?"
-                     alt="?"
-                  />
-                  <Flex width="100%" direction="column" gap="3">
-                     <TextArea
-                        style={{ width: "100%", maxWidth: 500 }}
-                        placeholder="Add a comment..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                     />
-                     <Button
-                        onClick={handleCreateComment}
-                        style={{ width: "max-content" }}
-                     >
-                        {commentId ? "Update" : "Post"} comment
-                     </Button>
-                  </Flex>
-               </Flex>
-               <hr
-                  style={{
-                     margin: "10px 0",
-                     borderColor: "#cfcfca",
-                     maxWidth: 500,
-                  }}
-               />
-            </>
-         )}
+         <CommentInput
+            commentId={commentId}
+            handleCreateComment={handleCreateComment}
+         />
          <Flex direction="column" gap="5">
             {comments?.map((currentComment) => (
                <CommentItem
