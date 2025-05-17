@@ -19,15 +19,19 @@ export async function POST(request: NextRequest) {
       where: { email: session.user.email! },
    });
 
+   if (!user) {
+      return new Response("User not found", { status: 401 });
+   }
+
    const { comment, issueId } = body;
    const res = await prisma.comment.create({
-      data: { comment, userId: user?.id!, issueId: parseInt(issueId) },
+      data: { comment, userId: user.id, issueId: parseInt(issueId) },
    });
 
    return NextResponse.json(res);
 }
 
-export async function GET(request: NextRequest, params: { issueId: string }) {
+export async function GET(request: NextRequest) {
    const searchParams = request.nextUrl.searchParams;
    const issueId = searchParams.get("issueId");
    const comments = await prisma.comment.findMany({

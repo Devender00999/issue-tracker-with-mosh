@@ -2,9 +2,8 @@ import { IssueBadge } from "@/app/components";
 import { Issue } from "@prisma/client";
 import { Flex, Table } from "@radix-ui/themes";
 import { default as Link, default as NextLink } from "next/link";
-import { FaSortUp, FaSortDown } from "react-icons/fa";
-import { IssueQuery } from "../page";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
+import { IssueQuery } from "../page";
 
 interface Props {
    searchParams: IssueQuery;

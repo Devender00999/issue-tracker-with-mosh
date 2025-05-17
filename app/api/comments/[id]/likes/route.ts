@@ -16,7 +16,6 @@ export async function POST(
    });
 
    let res;
-   console.log(likedComment);
    if (likedComment) {
       res = await prisma.likedComment.delete({
          where: { id: likedComment.id },
@@ -35,8 +34,11 @@ export async function POST(
          where: { email: session.user.email! },
       });
 
+      if (!user)
+         return NextResponse.json({ message: "Unautherised" }, { status: 401 });
+
       res = await prisma.likedComment.create({
-         data: { commentId: comment.id, userId: user?.id! },
+         data: { commentId: comment.id, userId: user.id! },
       });
    }
 

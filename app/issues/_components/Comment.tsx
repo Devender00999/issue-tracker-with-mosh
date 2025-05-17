@@ -1,7 +1,6 @@
 import { Comment as CommentType, User } from "@prisma/client";
 import { Avatar, Badge, Flex, Text } from "@radix-ui/themes";
 import dayjs from "dayjs";
-import React, { useState } from "react";
 import { AiFillLike } from "react-icons/ai";
 
 const CommentItem = ({
@@ -10,14 +9,15 @@ const CommentItem = ({
    handleLike,
    setCommentId,
    handleDeleteComment,
+   setCommentText,
 }: {
    comment: CommentType & { user: User };
    isCurrentUser: boolean;
    handleLike: (id: number) => void;
    setCommentId: (id: number) => void;
    handleDeleteComment: (id: number) => void;
+   setCommentText: (value: string) => void;
 }) => {
-   const [commentText, setCommentText] = useState("");
    return (
       <Flex width="100%" gap="4" key={comment.id}>
          <Avatar

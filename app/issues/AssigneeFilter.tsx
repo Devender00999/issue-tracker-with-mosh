@@ -1,8 +1,8 @@
 "use client";
-import { Status, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 
 const AssigneeFilter = ({ assignees }: { assignees: User[] }) => {
    const router = useRouter();
