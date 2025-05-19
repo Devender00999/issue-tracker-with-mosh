@@ -6,11 +6,13 @@ const CommentInput = ({
    handleCreateComment,
    commentText,
    setCommentText,
+   isAddingComment = false,
 }: {
    commentId: number | null;
    handleCreateComment: (text: string) => void;
    commentText: string;
    setCommentText: (comment: string) => void;
+   isAddingComment?: boolean;
 }) => {
    const { data } = useSession();
    if (!data?.user) return <></>;
@@ -37,6 +39,7 @@ const CommentInput = ({
                      setCommentText("");
                   }}
                   style={{ width: "max-content" }}
+                  loading={isAddingComment}
                >
                   {commentId ? "Update" : "Post"} comment
                </Button>

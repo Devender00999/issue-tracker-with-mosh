@@ -1,7 +1,7 @@
 "use client";
 import { Comment, User } from "@prisma/client";
 import { Flex, Skeleton, Text } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -25,6 +25,35 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
          axios.get(`/api/comments?issueId=` + issueId).then((res) => res.data),
    });
 
+   const { mutateAsync: createComment, isPending: isAddingComment } =
+      useMutation({
+         mutationFn: ({
+            comment,
+            issueId,
+         }: {
+            comment: string;
+            issueId: number;
+         }) =>
+            axios.post(`/api/comments`, {
+               comment,
+               issueId,
+            }),
+      });
+
+   const { mutateAsync: updateComment, isPending: isUpdatingComment } =
+      useMutation({
+         mutationFn: ({
+            comment,
+            commentId,
+         }: {
+            comment: string;
+            commentId: number;
+         }) =>
+            axios.patch(`/api/comments/${commentId}`, {
+               comment,
+            }),
+      });
+
    const router = useRouter();
 
    const [commentId, setCommentId] = useState<null | number>(null);
@@ -46,14 +75,9 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
    const handleCreateComment = async (commentText: string) => {
       try {
          if (!commentId) {
-            await axios.post(`/api/comments`, {
-               comment: commentText,
-               issueId,
-            });
+            await createComment({ comment: commentText, issueId });
          } else {
-            await axios.patch(`/api/comments/${commentId}`, {
-               comment: commentText,
-            });
+            await updateComment({ comment: commentText, commentId });
             setCommentId(null);
          }
          refetchComments();
@@ -90,6 +114,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
             handleCreateComment={handleCreateComment}
             commentText={commentText}
             setCommentText={setCommentText}
+            isAddingComment={isAddingComment || isUpdatingComment}
          />
          <Flex direction="column" gap="5">
             {comments?.map((currentComment) => (
