@@ -40,6 +40,13 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
             }),
       });
 
+   const { mutateAsync: likeComment } = useMutation({
+      mutationFn: ({ commentId }: { commentId: number }) => {
+         console.log(commentId);
+         return axios.post(`/api/comments/${commentId}/likes`, {});
+      },
+   });
+
    const { mutateAsync: updateComment, isPending: isUpdatingComment } =
       useMutation({
          mutationFn: ({
@@ -64,7 +71,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
          if (!data?.user?.email) {
             router.push("/api/auth/signin");
          }
-         await axios.post(`/api/comments/${commentId}/likes`, {});
+         await likeComment({ commentId });
          router.refresh();
          refetchComments();
       } catch (err) {
