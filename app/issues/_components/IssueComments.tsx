@@ -42,7 +42,6 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
 
    const { mutateAsync: likeComment } = useMutation({
       mutationFn: ({ commentId }: { commentId: number }) => {
-         console.log(commentId);
          return axios.post(`/api/comments/${commentId}/likes`, {});
       },
    });
