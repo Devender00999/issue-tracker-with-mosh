@@ -25,6 +25,7 @@ export const patchIssueSchema = z.object({
 export const createCommentSchema = z.object({
    comment: z.string().min(1, "Comment cannot be empty"),
    issueId: z.number(),
+   parentCommentId: z.number().optional(),
 });
 
 export const updateCommentSchema = z.object({

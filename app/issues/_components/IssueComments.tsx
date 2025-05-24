@@ -30,13 +30,16 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
          mutationFn: ({
             comment,
             issueId,
+            parentCommentId,
          }: {
             comment: string;
             issueId: number;
+            parentCommentId?: number;
          }) =>
             axios.post(`/api/comments`, {
                comment,
                issueId,
+               parentCommentId,
             }),
       });
 
@@ -78,10 +81,17 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
       }
    };
 
-   const handleCreateComment = async (commentText: string) => {
+   const handleCreateComment = async (
+      commentText: string,
+      parentCommentId?: number
+   ) => {
       try {
          if (!commentId) {
-            await createComment({ comment: commentText, issueId });
+            await createComment({
+               comment: commentText,
+               issueId,
+               parentCommentId,
+            });
          } else {
             await updateComment({ comment: commentText, commentId });
             setCommentId(null);
@@ -134,6 +144,7 @@ const IssueComments = ({ issueId }: { issueId: number }) => {
                   key={currentComment.id}
                   setCommentId={setCommentId}
                   setCommentText={setCommentText}
+                  handleReply={handleCreateComment}
                />
             ))}
          </Flex>

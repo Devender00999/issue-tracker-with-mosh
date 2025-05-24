@@ -23,9 +23,15 @@ export async function POST(request: NextRequest) {
       return new Response("User not found", { status: 401 });
    }
 
-   const { comment, issueId } = body;
+   const { comment, issueId, parentCommentId } = body;
+   console.log({ parentCommentId });
    const res = await prisma.comment.create({
-      data: { comment, userId: user.id, issueId: parseInt(issueId) },
+      data: {
+         comment,
+         userId: user.id,
+         issueId: parseInt(issueId),
+         parentCommentId: parentCommentId ?? undefined,
+      },
    });
 
    return NextResponse.json(res);
@@ -35,8 +41,38 @@ export async function GET(request: NextRequest) {
    const searchParams = request.nextUrl.searchParams;
    const issueId = searchParams.get("issueId");
    const comments = await prisma.comment.findMany({
-      where: { issueId: parseInt(issueId!) },
-      include: { user: { select: { name: true, image: true, email: true } } },
+      where: { issueId: parseInt(issueId!), parentCommentId: null },
+      include: {
+         user: { select: { name: true, image: true, email: true } },
+         replies: {
+            include: {
+               user: { select: { name: true, image: true, email: true } },
+               replies: {
+                  include: {
+                     user: { select: { name: true, image: true, email: true } },
+                     replies: {
+                        include: {
+                           user: {
+                              select: { name: true, image: true, email: true },
+                           },
+                           replies: {
+                              include: {
+                                 user: {
+                                    select: {
+                                       name: true,
+                                       image: true,
+                                       email: true,
+                                    },
+                                 },
+                              },
+                           },
+                        },
+                     },
+                  },
+               },
+            },
+         },
+      },
    });
 
    return NextResponse.json(comments);
