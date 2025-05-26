@@ -107,25 +107,28 @@ const CommentItem = ({
                </>
             </Flex>
             <Flex direction="column" gap="2" className="mt-3">
-               {(comment as any).replies?.map(
-                  (reply: CommentType & { user: User }) => (
-                     <CommentItem
-                        key={`${comment.id}-${reply?.id}`}
-                        comment={reply}
-                        handleDeleteComment={handleDeleteComment}
-                        handleLike={handleLike}
-                        handleReply={handleReply}
-                        isCurrentUser={isCurrentUser}
-                        setCommentId={setCommentId}
-                        setCommentText={setCommentText}
-                     />
-                  )
-               )}
+               {(
+                  comment as CommentType & {
+                     user: User;
+                     replies: CommentType[];
+                  }
+               ).replies?.map((reply) => (
+                  <CommentItem
+                     key={`${comment.id}-${reply?.id}`}
+                     comment={reply as CommentType & { user: User }}
+                     handleDeleteComment={handleDeleteComment}
+                     handleLike={handleLike}
+                     handleReply={handleReply}
+                     isCurrentUser={isCurrentUser}
+                     setCommentId={setCommentId}
+                     setCommentText={setCommentText}
+                  />
+               ))}
             </Flex>
             {showReply && (
                <Flex style={{ marginTop: 10 }} gap="10px">
                   <Avatar
-                     src={data?.user?.image!}
+                     src={data?.user?.image || ""}
                      radius="full"
                      fallback="?"
                      size="1"
